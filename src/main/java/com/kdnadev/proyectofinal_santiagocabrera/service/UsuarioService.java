@@ -2,6 +2,7 @@ package com.kdnadev.proyectofinal_santiagocabrera.service;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -21,12 +22,16 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Usuario findById(Long id){
-        return usuarioRepository.getReferenceById(id);
+    public Optional<Usuario> findById(Long id){
+        return usuarioRepository.findById(id);
     }
 
-    public void deleteById(Long id){
-        usuarioRepository.deleteById(id);
+    public Optional<Usuario> deleteById(Long id){
+        return usuarioRepository.findById(id)
+            .map(usuarioEliminado -> {
+                usuarioRepository.delete(usuarioEliminado);
+                return usuarioEliminado;
+            });
     }
 
     public Usuario create(Usuario usuario){

@@ -7,15 +7,21 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "usuario")
+@Table(
+    name = "usuario",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"documento"})
+)
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
+
+    private String documento;
 
     private String email;
 
@@ -27,15 +33,17 @@ public class Usuario {
 
     public Usuario() {}
 
-    public Usuario(String nombre, String email, String telefono) {
+    public Usuario(String nombre, String documento, String email, String telefono) {
         this.nombre = nombre;
+        this.documento = documento;
         this.email = email;
         this.telefono = telefono;
     }
 
-    public Usuario(Long id, String nombre, String email, String telefono) {
+    public Usuario(Long id, String nombre, String documento, String email, String telefono) {
         this.id = id;
         this.nombre = nombre;
+        this.documento = documento;
         this.email = email;
         this.telefono = telefono;
     }
@@ -54,6 +62,14 @@ public class Usuario {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
     }
 
     public String getEmail() {
@@ -90,7 +106,8 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Usuario [id=" + id + ", nombre=" + nombre + ", email=" + email + ", telefono=" + telefono + "]";
+        return "Usuario [id=" + id + ", nombre=" + nombre + ", documento=" + documento + ", email=" + email
+                + ", telefono=" + telefono + "]";
     }
 
 }
