@@ -24,7 +24,7 @@ public class AdopcionController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ApiResponse<Adopcion>> postMethodName(@RequestBody Adopcion adopcion) {
+    public ResponseEntity<ApiResponse<Adopcion>> create(@RequestBody Adopcion adopcion) {
         try {
             Adopcion adopcionCreada = adopcionService.create(adopcion);
             return ResponseEntity.ok(new ApiResponse<>(adopcionCreada));
