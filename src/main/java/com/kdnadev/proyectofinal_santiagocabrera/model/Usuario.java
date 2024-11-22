@@ -85,19 +85,23 @@ public class Usuario implements UserDetails {
 
     public Usuario() {}
 
-    public Usuario(String nombre, String documento, String email, String telefono) {
+    public Usuario(String nombre, String documento, String email, String telefono, String username, String password) {
         this.nombre = nombre;
         this.documento = documento;
         this.email = email;
         this.telefono = telefono;
+        this.username = username;
+        this.password = password;
     }
 
-    public Usuario(Long id, String nombre, String documento, String email, String telefono) {
+    public Usuario(Long id, String nombre, String documento, String email, String telefono, String username, String password) {
         this.id = id;
         this.nombre = nombre;
         this.documento = documento;
         this.email = email;
         this.telefono = telefono;
+        this.username = username;
+        this.password = password;
     }
 
     public Long getId() {
@@ -181,6 +185,10 @@ public class Usuario implements UserDetails {
             throw new IllegalArgumentException("El nombre de usuario no puede estar vacío");
         }
         this.username = username;
+    }
+
+    public Set<Rol> getRoles() {
+        return roles;
     }
 
 }

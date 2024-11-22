@@ -2,6 +2,7 @@ package com.kdnadev.proyectofinal_santiagocabrera.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
@@ -11,6 +12,7 @@ import com.kdnadev.proyectofinal_santiagocabrera.service.UsuarioService;
 import java.util.Set;
 
 @Configuration
+@Profile("!test")
 public class InitialDataConfig {
 
     @Autowired
@@ -35,9 +37,9 @@ public class InitialDataConfig {
         }
 
         //Verifica si ya existe un doctor para testing
-        if (usuarioService.findByUsername("doctorTest").isEmpty()) {
+        if (usuarioService.findByUsername("doctor").isEmpty()) {
             Usuario doctor = new Usuario();
-            doctor.setUsername("doctorTest");
+            doctor.setUsername("doctor");
             doctor.setPassword(passwordEncoder.encode("doctor123"));
             doctor.setEmail("doctor@sistema.com");
             doctor.setNombre("Doctor");
@@ -48,9 +50,9 @@ public class InitialDataConfig {
         }
 
         //Verifica si ya existe un cliente para testing
-        if (usuarioService.findByUsername("clienteTest").isEmpty()) {
+        if (usuarioService.findByUsername("cliente").isEmpty()) {
             Usuario cliente = new Usuario();
-            cliente.setUsername("clienteTest");
+            cliente.setUsername("cliente");
             cliente.setPassword(passwordEncoder.encode("cliente123"));
             cliente.setEmail("cliente@sistema.com");
             cliente.setNombre("Cliente");

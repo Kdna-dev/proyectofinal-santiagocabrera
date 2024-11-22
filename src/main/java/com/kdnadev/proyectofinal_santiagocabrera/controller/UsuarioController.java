@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kdnadev.proyectofinal_santiagocabrera.common.response.ApiResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
 import com.kdnadev.proyectofinal_santiagocabrera.service.UsuarioService;
@@ -52,13 +53,8 @@ public class UsuarioController {
             }).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<Usuario> create(@RequestBody Usuario usuario) {
-        Usuario usuarioCreado = usuarioService.create(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCreado);
-    }
-
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody Usuario usuario) {
         return usuarioService.findById(id)
             .map(usuarioExistente -> {
@@ -69,6 +65,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> delete(@PathVariable Long id){
         return usuarioService.deleteById(id)
             .map(usuarioEliminado ->  ResponseEntity.noContent().build())
@@ -77,24 +74,31 @@ public class UsuarioController {
 
     @PostMapping("/registro/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Usuario> registrarAdmin(@RequestBody Usuario usuario) {
+    public ResponseEntity<ApiResponse<Usuario>> registrarAdmin(@RequestBody Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRoles(Set.of(Rol.ADMIN));
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.create(usuario));
+        Usuario usuarioCreado = usuarioService.create(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(new ApiResponse<>(usuarioCreado));
     }
 
     @PostMapping("/registro/doctor")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Usuario> registrarDoctor(@RequestBody Usuario usuario) {
+    public ResponseEntity<ApiResponse<Usuario>> registrarDoctor(@RequestBody Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRoles(Set.of(Rol.DOCTOR));
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.create(usuario));
+        Usuario usuarioCreado = usuarioService.create(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(new ApiResponse<>(usuarioCreado));
     }
 
     @PostMapping("/registro/cliente")
-    public ResponseEntity<Usuario> registrarCliente(@RequestBody Usuario usuario) {
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    public ResponseEntity<ApiResponse<Usuario>> registrarCliente(@RequestBody Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRoles(Set.of(Rol.CLIENTE));
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.create(usuario));
+        Usuario usuarioCreado = usuarioService.create(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(new ApiResponse<>(usuarioCreado));
     }
 }
