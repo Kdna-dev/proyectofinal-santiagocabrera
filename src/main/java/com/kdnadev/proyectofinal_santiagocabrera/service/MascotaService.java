@@ -62,9 +62,7 @@ public class MascotaService {
 
                 return mascotaRepository.save(m);
 
-            }).orElseGet(() -> {
-                return create(actualizacionMascota);
-            });
+            }).orElseGet(() -> create(actualizacionMascota));
     }
 
     public Mascota setDisponibleParaAdopcion(Long id, boolean disponible){

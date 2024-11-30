@@ -1,4 +1,4 @@
-package com.kdnadev.proyectofinal_santiagocabrera.integration;
+package com.kdnadev.proyectofinal_santiagocabrera.integration.usuario;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -15,10 +15,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.UsuarioDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.integration.common.BaseIntegrationTest;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
 import com.kdnadev.proyectofinal_santiagocabrera.service.UsuarioService;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -33,8 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class UsuarioControllerIntegrationTests {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class UsuarioControllerIntegrationTests extends BaseIntegrationTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -67,34 +67,33 @@ public class UsuarioControllerIntegrationTests {
         usuarioService.create(cliente);
     }
 
-    HttpEntity<String> setHeadersAdmin(){
+    HttpEntity<String> setHeadersAdmin() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("admin", "admin123");
         return new HttpEntity<>(headers);
     }
 
-    HttpEntity<String> setHeadersDoctor(){
+    HttpEntity<String> setHeadersDoctor() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("doctor", "doctor123");
         return new HttpEntity<>(headers);
     }
 
-    HttpEntity<String> setHeadersCliente(){
+    HttpEntity<String> setHeadersCliente() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("cliente", "cliente123");
         return new HttpEntity<>(headers);
     }
 
-    //region GetMethods
+    // region GetMethods
     @Test
     void debeRetornarUnauthorizedSinCredenciales() {
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                "/api/usuarios",
-                HttpMethod.GET,
-                new HttpEntity<>(new HttpHeaders()), // Sin credenciales
-                String.class
-            );
+                    "/api/usuarios",
+                    HttpMethod.GET,
+                    new HttpEntity<>(new HttpHeaders()), // Sin credenciales
+                    String.class);
             assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusCode());
@@ -104,10 +103,10 @@ public class UsuarioControllerIntegrationTests {
     @Test
     void debeObtenerTodosLosUsuariosLogueadoAdmin() {
         ResponseEntity<UsuarioDTO[]> responseWithHeaders = restTemplate
-            .exchange("/api/usuarios",
-            HttpMethod.GET,
-            setHeadersAdmin(),
-            UsuarioDTO[].class);
+                .exchange("/api/usuarios",
+                        HttpMethod.GET,
+                        setHeadersAdmin(),
+                        UsuarioDTO[].class);
         assertEquals(HttpStatus.OK, responseWithHeaders.getStatusCode());
     }
 
@@ -115,11 +114,10 @@ public class UsuarioControllerIntegrationTests {
     void debeRetornarForbiddenLogueadoDoctor() {
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                "/api/usuarios",
-                HttpMethod.GET,
-                setHeadersDoctor(),
-                String.class
-            );
+                    "/api/usuarios",
+                    HttpMethod.GET,
+                    setHeadersDoctor(),
+                    String.class);
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
@@ -130,11 +128,10 @@ public class UsuarioControllerIntegrationTests {
     void debeRetornarForbiddenLogueadoCliente() {
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                "/api/usuarios",
-                HttpMethod.GET,
-                setHeadersCliente(),
-                String.class
-            );
+                    "/api/usuarios",
+                    HttpMethod.GET,
+                    setHeadersCliente(),
+                    String.class);
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         } catch (HttpClientErrorException e) {
             assertEquals(HttpStatus.FORBIDDEN, e.getStatusCode());
@@ -156,12 +153,12 @@ public class UsuarioControllerIntegrationTests {
         ResponseEntity<Usuario> response = restTemplate.getForEntity("/api/usuarios/1", Usuario.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
-    //endregion
+    // endregion
 
-    //region Post Methods
+    // region Post Methods
     @Test
     @DirtiesContext
-    void debeCrearUnUsuarioAdmin(){
+    void debeCrearUnUsuarioAdmin() {
         Usuario usuarioTest = new Usuario();
         usuarioTest.setUsername("Prueba");
         usuarioTest.setPassword("passPrueba");
@@ -170,7 +167,8 @@ public class UsuarioControllerIntegrationTests {
         usuarioTest.setDocumento("123-456-0987");
         usuarioTest.setTelefono("123-456-7890");
 
-        ResponseEntity<Usuario> response = restTemplate.postForEntity("/api/usuarios/registro/admin", usuarioTest, Usuario.class);
+        ResponseEntity<Usuario> response = restTemplate.postForEntity("/api/usuarios/registro/admin", usuarioTest,
+                Usuario.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
         DocumentContext documentContext = JsonPath.parse(response.getBody());
@@ -199,8 +197,9 @@ public class UsuarioControllerIntegrationTests {
         usuarioTest.setDocumento("123-456-0987");
         usuarioTest.setTelefono("123-456-7890");
 
-        ResponseEntity<Usuario> response = restTemplate.postForEntity("/api/usuarios/registro/admin", usuarioTest, Usuario.class);
+        ResponseEntity<Usuario> response = restTemplate.postForEntity("/api/usuarios/registro/admin", usuarioTest,
+                Usuario.class);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
-    //endregion
+    // endregion
 }

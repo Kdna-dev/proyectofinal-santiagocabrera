@@ -1,6 +1,5 @@
 package com.kdnadev.proyectofinal_santiagocabrera.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,8 +9,11 @@ import com.kdnadev.proyectofinal_santiagocabrera.repository.UsuarioRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
-    @Autowired
+
     private UsuarioRepository usuarioRepository;
+    public CustomUserDetailsService(UsuarioRepository usuarioRepository){
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

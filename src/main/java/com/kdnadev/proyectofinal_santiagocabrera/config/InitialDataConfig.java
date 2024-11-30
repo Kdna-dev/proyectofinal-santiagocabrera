@@ -1,6 +1,5 @@
 package com.kdnadev.proyectofinal_santiagocabrera.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,11 +14,13 @@ import java.util.Set;
 @Profile("!test")
 public class InitialDataConfig {
 
-    @Autowired
     private UsuarioService usuarioService;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public InitialDataConfig (UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
+        this.usuarioService = usuarioService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @jakarta.annotation.PostConstruct
     public void init() {
