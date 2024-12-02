@@ -5,15 +5,21 @@ import java.util.Optional;
 import java.sql.Date;
 import org.springframework.stereotype.Service;
 
+import com.kdnadev.proyectofinal_santiagocabrera.common.utils.Utils;
+import com.kdnadev.proyectofinal_santiagocabrera.exception.ElementoDuplicadoException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Mascota;
+import com.kdnadev.proyectofinal_santiagocabrera.model.TipoMascota;
 import com.kdnadev.proyectofinal_santiagocabrera.repository.MascotaRepository;
+import com.kdnadev.proyectofinal_santiagocabrera.repository.TipoMascotaRepository;
 
 @Service
 public class MascotaService {
     private MascotaRepository mascotaRepository;
+    private TipoMascotaRepository tipoMascotaRepository;
 
-    public MascotaService(MascotaRepository mascotaRepository){
+    public MascotaService(MascotaRepository mascotaRepository, TipoMascotaRepository tipoMascotaRepository){
         this.mascotaRepository = mascotaRepository;
+        this.tipoMascotaRepository = tipoMascotaRepository;
     }
 
     public List<Mascota> getAll(){
@@ -68,5 +74,17 @@ public class MascotaService {
     public Mascota setDisponibleParaAdopcion(Long id, boolean disponible){
         mascotaRepository.setDisponibleParaAdopcionById(id, disponible);
         return mascotaRepository.getReferenceById(id);
+    }
+
+    public TipoMascota createTipoMascota(String tipo){
+        TipoMascota tipoMascota = new TipoMascota();
+
+        if(tipoMascotaRepository.findByNombre(tipo).isPresent())
+            throw new ElementoDuplicadoException("Ya existe el tipo mascota que intenta ingresar.");
+
+        tipoMascota.setNombre(tipo);
+        tipoMascota.setFechaCreacion(Utils.getCurrentDate());
+
+        return tipoMascotaRepository.save(tipoMascota);
     }
 }

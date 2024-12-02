@@ -2,7 +2,7 @@ package com.kdnadev.proyectofinal_santiagocabrera.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.ApiResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Adopcion;
 import com.kdnadev.proyectofinal_santiagocabrera.service.AdopcionService;
 
@@ -24,14 +24,14 @@ public class AdopcionController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ApiResponse<Adopcion>> create(@RequestBody Adopcion adopcion) {
+    public ResponseEntity<GenericResponse<Adopcion>> create(@RequestBody Adopcion adopcion) {
         try {
             Adopcion adopcionCreada = adopcionService.create(adopcion);
-            return ResponseEntity.ok(new ApiResponse<>(adopcionCreada));
+            return ResponseEntity.ok(new GenericResponse<>(adopcionCreada));
         } catch (Exception e) {
             return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(new ApiResponse<>(null, "Error al asignar adopcion", e.getMessage()));
+                .body(new GenericResponse<>(null, "Error al asignar adopcion", e.getMessage()));
         }
     }
 

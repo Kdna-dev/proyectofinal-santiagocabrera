@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.ApiResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
 import com.kdnadev.proyectofinal_santiagocabrera.service.UsuarioService;
@@ -74,31 +74,31 @@ public class UsuarioController {
 
     @PostMapping("/registro/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Usuario>> registrarAdmin(@RequestBody Usuario usuario) {
+    public ResponseEntity<GenericResponse<Usuario>> registrarAdmin(@RequestBody Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRoles(Set.of(Rol.ADMIN));
         Usuario usuarioCreado = usuarioService.create(usuario);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new ApiResponse<>(usuarioCreado));
+            .body(new GenericResponse<>(usuarioCreado));
     }
 
     @PostMapping("/registro/doctor")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Usuario>> registrarDoctor(@RequestBody Usuario usuario) {
+    public ResponseEntity<GenericResponse<Usuario>> registrarDoctor(@RequestBody Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRoles(Set.of(Rol.DOCTOR));
         Usuario usuarioCreado = usuarioService.create(usuario);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new ApiResponse<>(usuarioCreado));
+            .body(new GenericResponse<>(usuarioCreado));
     }
 
     @PostMapping("/registro/cliente")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
-    public ResponseEntity<ApiResponse<Usuario>> registrarCliente(@RequestBody Usuario usuario) {
+    public ResponseEntity<GenericResponse<Usuario>> registrarCliente(@RequestBody Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRoles(Set.of(Rol.CLIENTE));
         Usuario usuarioCreado = usuarioService.create(usuario);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new ApiResponse<>(usuarioCreado));
+            .body(new GenericResponse<>(usuarioCreado));
     }
 }
