@@ -205,4 +205,12 @@ public class Usuario implements UserDetails {
             throw new ValidacionNegocioException("El menor numero de mascotas es 0");
         this.cantidadMascotasAdoptadas--;
     }
+
+    public int getCantidadMascotasAdoptadas() {
+        return cantidadMascotasAdoptadas;
+    }
+
+    public void setCantidadMascotasAdoptadas(int cantidadMascotasAdoptadas) {
+        this.cantidadMascotasAdoptadas = cantidadMascotasAdoptadas;
+    }
 }

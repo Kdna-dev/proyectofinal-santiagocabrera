@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.UsuarioResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioCreateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioMapper;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioUpdateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
@@ -29,11 +32,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
     private UsuarioService usuarioService;
-    private PasswordEncoder passwordEncoder;
+    private UsuarioMapper usuarioMapper;
 
-    public UsuarioController (UsuarioService usuarioService, PasswordEncoder passwordEncoder){
+    public UsuarioController (UsuarioService usuarioService, PasswordEncoder passwordEncoder, UsuarioMapper usuarioMapper){
         this.usuarioService = usuarioService;
-        this.passwordEncoder = passwordEncoder;
+        this.usuarioMapper = usuarioMapper;
     }
 
     @GetMapping
@@ -43,7 +46,7 @@ public class UsuarioController {
         if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(new UsuarioResponse(usuarios));
+        return ResponseEntity.ok(new UsuarioResponse(usuarioMapper.toDTO(usuarios)));
     }
 
     @GetMapping("/{id}")
@@ -52,16 +55,16 @@ public class UsuarioController {
         Usuario usuarioEncontrado = usuarioService.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("No se encontro el usuario con id: " + id));
 
-        return ResponseEntity.ok(new UsuarioResponse(usuarioEncontrado));
+        return ResponseEntity.ok(new UsuarioResponse(usuarioMapper.toDTO(usuarioEncontrado)));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UsuarioResponse> update(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioResponse> update(@PathVariable Long id, @RequestBody UsuarioUpdateDTO usuario) {
         return usuarioService.findById(id)
             .map(usuarioExistente -> {
                 Usuario usuarioActualizado = usuarioService.update(id, usuario);
-                return ResponseEntity.ok(new UsuarioResponse(usuarioActualizado));
+                return ResponseEntity.ok(new UsuarioResponse(usuarioMapper.toDTO(usuarioActualizado)));
             })
             .orElseThrow(() -> new ResourceNotFoundException("No se encontro el usuario con el id: " + id));
     }
@@ -75,31 +78,25 @@ public class UsuarioController {
 
     @PostMapping("/registro/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<GenericResponse<Usuario>> registrarAdmin(@RequestBody Usuario usuario) {
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRoles(Set.of(Rol.ADMIN));
-        Usuario usuarioCreado = usuarioService.create(usuario);
+    public ResponseEntity<UsuarioResponse> registrarAdmin(@RequestBody UsuarioCreateDTO usuario) {
+        Usuario usuarioCreado = usuarioService.create(usuario, Rol.ADMIN.getCodigo());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new GenericResponse<>(usuarioCreado));
+            .body(new UsuarioResponse(usuarioMapper.toDTO(usuarioCreado)));
     }
 
     @PostMapping("/registro/doctor")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UsuarioResponse> registrarDoctor(@RequestBody Usuario usuario) {
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRoles(Set.of(Rol.DOCTOR));
-        Usuario usuarioCreado = usuarioService.create(usuario);
+    public ResponseEntity<UsuarioResponse> registrarDoctor(@RequestBody UsuarioCreateDTO usuario) {
+        Usuario usuarioCreado = usuarioService.create(usuario, Rol.DOCTOR.getCodigo());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new UsuarioResponse(usuarioCreado));
+            .body(new UsuarioResponse(usuarioMapper.toDTO(usuarioCreado)));
     }
 
     @PostMapping("/registro/cliente")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
-    public ResponseEntity<GenericResponse<Usuario>> registrarCliente(@RequestBody Usuario usuario) {
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        usuario.setRoles(Set.of(Rol.CLIENTE));
-        Usuario usuarioCreado = usuarioService.create(usuario);
+    public ResponseEntity<UsuarioResponse> registrarCliente(@RequestBody UsuarioCreateDTO usuario) {
+        Usuario usuarioCreado = usuarioService.create(usuario, Rol.CLIENTE.getCodigo());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new GenericResponse<>(usuarioCreado));
+            .body(new UsuarioResponse(usuarioMapper.toDTO(usuarioCreado)));
     }
 }
