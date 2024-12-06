@@ -5,14 +5,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.AdopcionResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.MascotaResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Adopcion;
-import com.kdnadev.proyectofinal_santiagocabrera.model.Mascota;
 import com.kdnadev.proyectofinal_santiagocabrera.service.AdopcionService;
 
 import java.net.URI;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;

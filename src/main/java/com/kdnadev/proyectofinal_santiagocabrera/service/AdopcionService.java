@@ -1,7 +1,5 @@
 package com.kdnadev.proyectofinal_santiagocabrera.service;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 
 import com.kdnadev.proyectofinal_santiagocabrera.repository.AdopcionRepository;

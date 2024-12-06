@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -54,7 +53,7 @@ public class Usuario implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
             .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.name()))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override
