@@ -9,6 +9,7 @@ public class UsuarioCreateDTO {
     private String telefono;
     private String username;
     private String password;
+    private String documento;
 
     public UsuarioCreateDTO() {
     }
@@ -66,4 +67,15 @@ public class UsuarioCreateDTO {
         }
         this.password = password;
     }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        if (documento == null || documento.isEmpty())
+            throw new IllegalArgumentException("El documento no puede estar vacio.");
+        this.documento = documento;
+    }
+    
 }

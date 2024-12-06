@@ -15,14 +15,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.UsuarioDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.integration.common.BaseIntegrationTest;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
 import com.kdnadev.proyectofinal_santiagocabrera.service.UsuarioService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 
@@ -48,23 +47,20 @@ class UsuarioControllerIntegrationTests extends BaseIntegrationTest {
     void setup() {
 
         // Crear usuarios de prueba
-        Usuario admin = new Usuario();
+        UsuarioCreateDTO admin = new UsuarioCreateDTO();
         admin.setUsername("admin");
         admin.setPassword(passwordEncoder.encode("admin123"));
-        admin.setRoles(Set.of(Rol.ADMIN));
-        usuarioService.create(admin);
+        usuarioService.create(admin, Rol.ADMIN.getCodigo());
 
-        Usuario doctor = new Usuario();
+        UsuarioCreateDTO doctor = new UsuarioCreateDTO();
         doctor.setUsername("doctor");
         doctor.setPassword(passwordEncoder.encode("doctor123"));
-        doctor.setRoles(Set.of(Rol.DOCTOR));
-        usuarioService.create(doctor);
+        usuarioService.create(doctor, Rol.DOCTOR.getCodigo());
 
-        Usuario cliente = new Usuario();
+        UsuarioCreateDTO cliente = new UsuarioCreateDTO();
         cliente.setUsername("cliente");
         cliente.setPassword(passwordEncoder.encode("cliente123"));
-        cliente.setRoles(Set.of(Rol.CLIENTE));
-        usuarioService.create(cliente);
+        usuarioService.create(cliente, Rol.CLIENTE.getCodigo());
     }
 
     HttpEntity<String> setHeadersAdmin() {
