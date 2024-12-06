@@ -87,4 +87,8 @@ public class MascotaService {
 
         return tipoMascotaRepository.save(tipoMascota);
     }
+
+    public List<TipoMascota> getAllTipoMascota(){
+        return tipoMascotaRepository.findAll();
+    }
 }

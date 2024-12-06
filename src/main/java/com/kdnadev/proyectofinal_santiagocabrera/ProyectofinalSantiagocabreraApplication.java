@@ -3,6 +3,8 @@ package com.kdnadev.proyectofinal_santiagocabrera;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.kdnadev.proyectofinal_santiagocabrera.service.MascotaService;
+
 import jakarta.annotation.PostConstruct;
 
 import java.io.File;
@@ -26,12 +28,33 @@ import io.swagger.v3.oas.annotations.info.Info;
 @SpringBootApplication
 public class ProyectofinalSantiagocabreraApplication {
 
+	private MascotaService mascotaService;
+
+	public ProyectofinalSantiagocabreraApplication(MascotaService mascotaService){
+		this.mascotaService = mascotaService;
+	}
+
 	@PostConstruct
 	public void init() {
+		this.initLogDirectory();
+		this.initDatosIniciales();
+	}
+
+	public void initLogDirectory(){
 		// Crear directorio de logs si no existe
 		File logDir = new File("logs/archived");
 		if (!logDir.exists()) {
 			logDir.mkdirs();
+		}
+	}
+
+	public void initDatosIniciales(){
+		if(mascotaService.getAllTipoMascota().isEmpty()){
+			mascotaService.createTipoMascota("Perro");
+			mascotaService.createTipoMascota("Gato");
+			mascotaService.createTipoMascota("Loro");
+			mascotaService.createTipoMascota("Hamster");
+			mascotaService.createTipoMascota("Huron");
 		}
 	}
 

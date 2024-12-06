@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
 import com.kdnadev.proyectofinal_santiagocabrera.repository.UsuarioRepository;
 
@@ -29,12 +30,10 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = false)
-    public Optional<Usuario> deleteById(Long id){
-        return usuarioRepository.findById(id)
-            .map(usuarioEliminado -> {
-                usuarioRepository.delete(usuarioEliminado);
-                return usuarioEliminado;
-            });
+    public void deleteById(Long id){
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("No se encontro el usuario con id: " + id));
+        usuarioRepository.delete(usuario);
     }
 
     @Transactional(readOnly = false)

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.common.response.UsuarioResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
 import com.kdnadev.proyectofinal_santiagocabrera.service.UsuarioService;
@@ -36,40 +38,39 @@ public class UsuarioController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Usuario>> getAll() {
+    public ResponseEntity<UsuarioResponse> getAll() {
         List<Usuario> usuarios = usuarioService.getAll();
         if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(usuarios);
+        return ResponseEntity.ok(new UsuarioResponse(usuarios));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
-    public ResponseEntity<Usuario> getById(@PathVariable Long id){
-        return usuarioService.findById(id)
-            .map(usuarioExistente -> {
-                return ResponseEntity.ok(usuarioExistente);
-            }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UsuarioResponse> getById(@PathVariable Long id){
+        Usuario usuarioEncontrado = usuarioService.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("No se encontro el usuario con id: " + id));
+
+        return ResponseEntity.ok(new UsuarioResponse(usuarioEncontrado));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioResponse> update(@PathVariable Long id, @RequestBody Usuario usuario) {
         return usuarioService.findById(id)
             .map(usuarioExistente -> {
                 Usuario usuarioActualizado = usuarioService.update(id, usuario);
-                return ResponseEntity.ok(usuarioActualizado);
+                return ResponseEntity.ok(new UsuarioResponse(usuarioActualizado));
             })
-            .orElse(ResponseEntity.notFound().build());
+            .orElseThrow(() -> new ResourceNotFoundException("No se encontro el usuario con el id: " + id));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Object> delete(@PathVariable Long id){
-        return usuarioService.deleteById(id)
-            .map(usuarioEliminado ->  ResponseEntity.noContent().build())
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        usuarioService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/registro/admin")
@@ -84,12 +85,12 @@ public class UsuarioController {
 
     @PostMapping("/registro/doctor")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<GenericResponse<Usuario>> registrarDoctor(@RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioResponse> registrarDoctor(@RequestBody Usuario usuario) {
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuario.setRoles(Set.of(Rol.DOCTOR));
         Usuario usuarioCreado = usuarioService.create(usuario);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new GenericResponse<>(usuarioCreado));
+            .body(new UsuarioResponse(usuarioCreado));
     }
 
     @PostMapping("/registro/cliente")

@@ -2,6 +2,7 @@ package com.kdnadev.proyectofinal_santiagocabrera.controller;
 
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.MascotaResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.common.response.TipoMascotaResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Mascota;
 import com.kdnadev.proyectofinal_santiagocabrera.model.TipoMascota;
@@ -40,82 +41,82 @@ public class MascotaController {
         this.mascotaService = mascotaService;
     }
 
-    @Operation(summary = "Obtener todas las mascotass", description = "Retorna una lista de todas las mascotas")
+    @Operation(summary = "Obtener todas las mascotass", description = "Retorna una lista de todas las mascotas", responses = {
+        @ApiResponse(responseCode = "200", description = "Lista total de mascotas", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MascotaResponse.class)))
+    })
     @GetMapping
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> getAll() {
         List<Mascota> mascotas = mascotaService.getAll();
         return ResponseEntity.ok(new MascotaResponse(mascotas));
     }
 
-    @Operation(
-        summary = "Obtener mascota",
-        description = "Retorna la informacion de la mascota solicitada por id en un array de 1 elemento",
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Mascota encontrada",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = MascotaResponse.class)
-                )
-            ),
-            @ApiResponse(
-                responseCode = "404",
-                description = "Mascota no encontrada",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = GenericResponse.class)
-                )
-            )
-        }
-    )
+    @Operation(summary = "Obtener mascota", description = "Retorna la informacion de la mascota solicitada por id en un array de 1 elemento", responses = {
+            @ApiResponse(responseCode = "200", description = "Mascota encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MascotaResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Mascota no encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class)))
+    })
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> getById(@PathVariable Long id) {
         Mascota mascota = mascotaService.getById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("No existe la mascota con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la mascota con id: " + id));
 
         return ResponseEntity.ok(new MascotaResponse(mascota));
     }
 
+    //TODO Implementar getAllDisponibleAdopcion con acceso de cliente
+    //TODO Implementar getByIdDisponibleAdopcion con acceso de cliente
+
     @PostMapping
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> create(@RequestBody Mascota mascota) {
         Mascota mascotaCreada = mascotaService.create(mascota);
 
         URI location = ServletUriComponentsBuilder
-            .fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(mascotaCreada.getId())
-            .toUri();
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(mascotaCreada.getId())
+                .toUri();
 
         return ResponseEntity
-            .created(location)
-            .body(new MascotaResponse(mascotaCreada));
+                .created(location)
+                .body(new MascotaResponse(mascotaCreada));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> update(@PathVariable Long id, @RequestBody Mascota mascota) {
         Mascota mascotaActualizada = mascotaService.update(id, mascota);
         return ResponseEntity.ok(new MascotaResponse(mascotaActualizada));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         mascotaService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("setDisponible/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MascotaResponse> setDisponibleParaAdopcion(@PathVariable Long id, @RequestParam boolean disponible) {
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    public ResponseEntity<MascotaResponse> setDisponibleParaAdopcion(@PathVariable Long id,
+            @RequestParam boolean disponible) {
         Mascota mascotaActualizada = mascotaService.setDisponibleParaAdopcion(id, disponible);
         return ResponseEntity.ok(new MascotaResponse(mascotaActualizada));
     }
 
     @PostMapping("/tipoMascota")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<GenericResponse<TipoMascota>> create(@RequestBody String tipo) {
+    public ResponseEntity<GenericResponse<TipoMascota>> createTipoMascota(@RequestBody String tipo) {
         TipoMascota tipoCreado = mascotaService.createTipoMascota(tipo);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new GenericResponse<>(tipoCreado));
+    }
+
+    @GetMapping("/tipoMascota")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
+    public ResponseEntity<TipoMascotaResponse> getAllTipoMascota() {
+        List<TipoMascota> tipoMascotas = mascotaService.getAllTipoMascota();
+        return ResponseEntity.ok(new TipoMascotaResponse(tipoMascotas));
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.kdnadev.proyectofinal_santiagocabrera.exception.ValidacionNegocioException;
+
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -38,6 +40,8 @@ public class Usuario implements UserDetails {
     private String nombre;
     private String documento;
     private String telefono;
+
+    private int cantidadMascotasAdoptadas;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -191,4 +195,15 @@ public class Usuario implements UserDetails {
         return roles;
     }
 
+    public void incrementaNumeroDeAdopciones() {
+        if (this.cantidadMascotasAdoptadas >= 3)
+            throw new ValidacionNegocioException("Usted ya llego al maximo numero de mascotas posible.");
+        this.cantidadMascotasAdoptadas++;
+    }
+
+    public void decrementaNumeroDeAdopciones(){
+        if (this.cantidadMascotasAdoptadas == 0)
+            throw new ValidacionNegocioException("El menor numero de mascotas es 0");
+        this.cantidadMascotasAdoptadas--;
+    }
 }
