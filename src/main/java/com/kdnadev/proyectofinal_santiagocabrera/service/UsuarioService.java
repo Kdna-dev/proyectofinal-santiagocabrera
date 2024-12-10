@@ -1,7 +1,6 @@
 package com.kdnadev.proyectofinal_santiagocabrera.service;
 
 import java.sql.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioMapper;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioUpdateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.exception.ElementoDuplicadoException;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Usuario;
@@ -25,7 +25,8 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
     private UsuarioMapper usuarioMapper;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, PasswordEncoder passwordEncoder){
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper,
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.passwordEncoder = passwordEncoder;
@@ -40,9 +41,12 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = false)
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("No se encontro el usuario con id: " + id));
+                .orElseThrow(() -> {
+                    throw new ResourceNotFoundException("No se encontro el usuario con id: " + id);
+                });
+
         usuarioRepository.delete(usuario);
     }
 
@@ -50,9 +54,17 @@ public class UsuarioService {
     public Usuario create(UsuarioCreateDTO usuarioNuevo, int codigoRol) {
         Usuario usuario = usuarioMapper.toEntity(usuarioNuevo);
 
+        usuarioRepository.findByDocumento(usuario.getDocumento())
+                .ifPresent(usuarioExistente -> {
+                    throw new ElementoDuplicadoException("Ya existe un usuario con el documento ingresado.");
+                });
+
+        usuarioRepository.findByUsername(usuario.getUsername())
+                .ifPresent(usuarioExistente -> {
+                    throw new ElementoDuplicadoException("El nombre de usuario que ingreso no esta disponible");
+                });
+
         usuario.setPassword(passwordEncoder.encode(usuarioNuevo.getPassword()));
-        
-        // Crear un nuevo Set con el rol correspondiente
         usuario.setRoles(Set.of(Rol.fromCodigo(codigoRol)));
 
         Date fechaActual = new Date(System.currentTimeMillis());
@@ -62,8 +74,11 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = false)
-    public Usuario update(Long id, UsuarioUpdateDTO actualizacionUsuario){
-        Usuario usuario = usuarioRepository.getReferenceById(id);
+    public Usuario update(Long id, UsuarioUpdateDTO actualizacionUsuario) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> {
+                    throw new ResourceNotFoundException("No se encontro el usuario con id: " + id);
+                });
 
         usuarioMapper.updateUsuarioFromDTO(actualizacionUsuario, usuario);
 

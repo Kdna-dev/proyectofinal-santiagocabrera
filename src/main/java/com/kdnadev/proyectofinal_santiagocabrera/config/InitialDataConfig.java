@@ -14,11 +14,9 @@ import com.kdnadev.proyectofinal_santiagocabrera.service.UsuarioService;
 public class InitialDataConfig {
 
     private UsuarioService usuarioService;
-    private PasswordEncoder passwordEncoder;
 
-    public InitialDataConfig (UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
+    public InitialDataConfig (UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @jakarta.annotation.PostConstruct
@@ -27,7 +25,7 @@ public class InitialDataConfig {
         if (usuarioService.findByUsername("admin").isEmpty()) {
             UsuarioCreateDTO admin = new UsuarioCreateDTO();
             admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setPassword("admin123");
             admin.setEmail("admin@sistema.com");
             admin.setNombre("Administrador");
             admin.setDocumento("0000");
@@ -39,7 +37,7 @@ public class InitialDataConfig {
         if (usuarioService.findByUsername("doctor").isEmpty()) {
             UsuarioCreateDTO doctor = new UsuarioCreateDTO();
             doctor.setUsername("doctor");
-            doctor.setPassword(passwordEncoder.encode("doctor123"));
+            doctor.setPassword("doctor123");
             doctor.setEmail("doctor@sistema.com");
             doctor.setNombre("Doctor");
             doctor.setDocumento("1234");
@@ -51,7 +49,7 @@ public class InitialDataConfig {
         if (usuarioService.findByUsername("cliente").isEmpty()) {
             UsuarioCreateDTO cliente = new UsuarioCreateDTO();
             cliente.setUsername("cliente");
-            cliente.setPassword(passwordEncoder.encode("cliente123"));
+            cliente.setPassword("cliente123");
             cliente.setEmail("cliente@sistema.com");
             cliente.setNombre("Cliente");
             cliente.setDocumento("4321");

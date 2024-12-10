@@ -1,7 +1,6 @@
 package com.kdnadev.proyectofinal_santiagocabrera.controller;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.UsuarioResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioMapper;
@@ -23,10 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -34,7 +29,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
     private UsuarioMapper usuarioMapper;
 
-    public UsuarioController (UsuarioService usuarioService, PasswordEncoder passwordEncoder, UsuarioMapper usuarioMapper){
+    public UsuarioController (UsuarioService usuarioService, UsuarioMapper usuarioMapper){
         this.usuarioService = usuarioService;
         this.usuarioMapper = usuarioMapper;
     }
@@ -43,9 +38,6 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioResponse> getAll() {
         List<Usuario> usuarios = usuarioService.getAll();
-        if (usuarios.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(new UsuarioResponse(usuarioMapper.toDTO(usuarios)));
     }
 
