@@ -1,8 +1,13 @@
 package com.kdnadev.proyectofinal_santiagocabrera.controller;
 
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.MascotaResponse;
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.TipoMascotaResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaCreateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaMapper;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaUpdateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaCreateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaMapper;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Mascota;
 import com.kdnadev.proyectofinal_santiagocabrera.model.TipoMascota;
@@ -36,9 +41,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Mascotas", description = "Controlador para gestionar mascotas y tipos de mascotas")
 public class MascotaController {
     private MascotaService mascotaService;
+    private MascotaMapper mascotaMapper;
+    private TipoMascotaMapper tipoMascotaMapper;
 
-    public MascotaController(MascotaService mascotaService) {
+    public MascotaController(MascotaService mascotaService, MascotaMapper mascotaMapper, TipoMascotaMapper tipoMascotaMapper) {
         this.mascotaService = mascotaService;
+        this.mascotaMapper = mascotaMapper;
+        this.tipoMascotaMapper = tipoMascotaMapper;
     }
 
     @Operation(summary = "Obtener todas las mascotass", description = "Retorna una lista de todas las mascotas", responses = {
@@ -48,7 +57,7 @@ public class MascotaController {
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> getAll() {
         List<Mascota> mascotas = mascotaService.getAll();
-        return ResponseEntity.ok(new MascotaResponse(mascotas));
+        return ResponseEntity.ok(new MascotaResponse(mascotaMapper.toDTO(mascotas)));
     }
 
     @Operation(summary = "Obtener mascota", description = "Retorna la informacion de la mascota solicitada por id en un array de 1 elemento", responses = {
@@ -61,7 +70,7 @@ public class MascotaController {
         Mascota mascota = mascotaService.getById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe la mascota con id: " + id));
 
-        return ResponseEntity.ok(new MascotaResponse(mascota));
+        return ResponseEntity.ok(new MascotaResponse(mascotaMapper.toDTO(mascota)));
     }
 
     //TODO Implementar getAllDisponibleAdopcion con acceso de cliente
@@ -69,7 +78,7 @@ public class MascotaController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
-    public ResponseEntity<MascotaResponse> create(@RequestBody Mascota mascota) {
+    public ResponseEntity<MascotaResponse> create(@RequestBody MascotaCreateDTO mascota) {
         Mascota mascotaCreada = mascotaService.create(mascota);
 
         URI location = ServletUriComponentsBuilder
@@ -80,14 +89,14 @@ public class MascotaController {
 
         return ResponseEntity
                 .created(location)
-                .body(new MascotaResponse(mascotaCreada));
+                .body(new MascotaResponse(mascotaMapper.toDTO(mascotaCreada)));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
-    public ResponseEntity<MascotaResponse> update(@PathVariable Long id, @RequestBody Mascota mascota) {
+    public ResponseEntity<MascotaResponse> update(@PathVariable Long id, @RequestBody MascotaUpdateDTO mascota) {
         Mascota mascotaActualizada = mascotaService.update(id, mascota);
-        return ResponseEntity.ok(new MascotaResponse(mascotaActualizada));
+        return ResponseEntity.ok(new MascotaResponse(mascotaMapper.toDTO(mascotaActualizada)));
     }
 
     @DeleteMapping("/{id}")
@@ -102,21 +111,23 @@ public class MascotaController {
     public ResponseEntity<MascotaResponse> setDisponibleParaAdopcion(@PathVariable Long id,
             @RequestParam boolean disponible) {
         Mascota mascotaActualizada = mascotaService.setDisponibleParaAdopcion(id, disponible);
-        return ResponseEntity.ok(new MascotaResponse(mascotaActualizada));
+        return ResponseEntity.ok(new MascotaResponse(mascotaMapper.toDTO(mascotaActualizada)));
     }
 
     @PostMapping("/tipoMascota")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<GenericResponse<TipoMascota>> createTipoMascota(@RequestBody String tipo) {
+    public ResponseEntity<TipoMascotaResponse> createTipoMascota(@RequestBody TipoMascotaCreateDTO tipo) {
         TipoMascota tipoCreado = mascotaService.createTipoMascota(tipo);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new GenericResponse<>(tipoCreado));
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new TipoMascotaResponse(tipoMascotaMapper.toDTO(tipoCreado)));
     }
 
     @GetMapping("/tipoMascota")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<TipoMascotaResponse> getAllTipoMascota() {
         List<TipoMascota> tipoMascotas = mascotaService.getAllTipoMascota();
-        return ResponseEntity.ok(new TipoMascotaResponse(tipoMascotas));
+        return ResponseEntity.ok(new TipoMascotaResponse(tipoMascotaMapper.toDTO(tipoMascotas)));
     }
 }

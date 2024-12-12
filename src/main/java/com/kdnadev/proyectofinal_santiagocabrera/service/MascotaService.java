@@ -6,7 +6,13 @@ import java.sql.Date;
 import org.springframework.stereotype.Service;
 
 import com.kdnadev.proyectofinal_santiagocabrera.common.utils.Utils;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaCreateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaMapper;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaUpdateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaCreateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaMapper;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ElementoDuplicadoException;
+import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Mascota;
 import com.kdnadev.proyectofinal_santiagocabrera.model.TipoMascota;
 import com.kdnadev.proyectofinal_santiagocabrera.repository.MascotaRepository;
@@ -15,80 +21,79 @@ import com.kdnadev.proyectofinal_santiagocabrera.repository.TipoMascotaRepositor
 @Service
 public class MascotaService {
     private MascotaRepository mascotaRepository;
+    private MascotaMapper mascotaMapper;
     private TipoMascotaRepository tipoMascotaRepository;
+    private TipoMascotaMapper tipoMascotaMapper;
 
-    public MascotaService(MascotaRepository mascotaRepository, TipoMascotaRepository tipoMascotaRepository){
+    public MascotaService(MascotaRepository mascotaRepository, MascotaMapper mascotaMapper,
+            TipoMascotaRepository tipoMascotaRepository,
+            TipoMascotaMapper tipoMascotaMapper) {
         this.mascotaRepository = mascotaRepository;
+        this.mascotaMapper = mascotaMapper;
         this.tipoMascotaRepository = tipoMascotaRepository;
+        this.tipoMascotaMapper = tipoMascotaMapper;
     }
 
-    public List<Mascota> getAll(){
+    public List<Mascota> getAll() {
         return mascotaRepository.findAll();
     }
 
-    public Optional<Mascota> getById(Long id){
+    public Optional<Mascota> getById(Long id) {
         return mascotaRepository.findById(id);
     }
 
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         mascotaRepository.deleteById(id);
     }
 
     /**
-     * Registra una nueva mascota,
-     * el atributo disponibleParaAdopcion estara por defecto en false
-     * @param mascota: Datos de la nueva mascota
+     * Registra una nueva mascota
+     * @param mascotaNueva: Datos de la nueva mascota
      * @return type Mascota
      */
-    public Mascota create(Mascota mascota){
+    public Mascota create(MascotaCreateDTO mascotaNueva) {
+        Mascota mascota = mascotaMapper.toEntity(mascotaNueva);
+
         Date fechaActual = new Date(System.currentTimeMillis());
         mascota.setFechaCreacion(fechaActual);
-        mascota.setDisponibleParaAdopcion(false);
 
         return mascotaRepository.save(mascota);
     }
 
     /**
-     * Actualiza la mascota correspondiente con los datos nuevos,
-     * en caso de no encontrar un registro para dicho identificador
-     * generara una nueva mascota.
-     * @param id: Identificador de la mascota a actualizar
+     * Actualiza la mascota correspondiente con los datos nuevos
+     * @param id:                   Identificador de la mascota a actualizar
      * @param actualizacionMascota: Datos nuevos de la mascota
      * @return type Mascota
      */
-    public Mascota update(Long id, Mascota actualizacionMascota){
+    public Mascota update(Long id, MascotaUpdateDTO actualizacionMascota) {
         return mascotaRepository.findById(id)
-            .map(m -> {
-                m.setNombre(actualizacionMascota.getNombre());
-                m.setTipoMascota(actualizacionMascota.getTipoMascota());
-                m.setEdad(actualizacionMascota.getEdad());
+                .map(m -> {
+                    mascotaMapper.updateMascotaFromDTO(actualizacionMascota, m);
 
-                Date fechaActual = new Date(System.currentTimeMillis());
-                m.setFechaActualizacion(fechaActual);
+                    Date fechaActual = new Date(System.currentTimeMillis());
+                    m.setFechaActualizacion(fechaActual);
+                    return mascotaRepository.save(m);
 
-                return mascotaRepository.save(m);
-
-            }).orElseGet(() -> create(actualizacionMascota));
+                }).orElseThrow(() -> new ResourceNotFoundException("No se encontro la mascota con id: " + id));
     }
 
-    public Mascota setDisponibleParaAdopcion(Long id, boolean disponible){
+    public Mascota setDisponibleParaAdopcion(Long id, boolean disponible) {
         mascotaRepository.setDisponibleParaAdopcionById(id, disponible);
         return mascotaRepository.getReferenceById(id);
     }
 
-    public TipoMascota createTipoMascota(String tipo){
-        TipoMascota tipoMascota = new TipoMascota();
+    public TipoMascota createTipoMascota(TipoMascotaCreateDTO tipoNuevo) {
+        TipoMascota tipoMascota = tipoMascotaMapper.toEntity(tipoNuevo);
 
-        if(tipoMascotaRepository.findByNombre(tipo).isPresent())
+        if (tipoMascotaRepository.findByNombre(tipoMascota.getNombre()).isPresent())
             throw new ElementoDuplicadoException("Ya existe el tipo mascota que intenta ingresar.");
 
-        tipoMascota.setNombre(tipo);
         tipoMascota.setFechaCreacion(Utils.getCurrentDate());
-
         return tipoMascotaRepository.save(tipoMascota);
     }
 
-    public List<TipoMascota> getAllTipoMascota(){
+    public List<TipoMascota> getAllTipoMascota() {
         return tipoMascotaRepository.findAll();
     }
 }

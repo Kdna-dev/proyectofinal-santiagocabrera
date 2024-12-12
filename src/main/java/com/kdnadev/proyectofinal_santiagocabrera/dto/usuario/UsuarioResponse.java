@@ -1,9 +1,9 @@
-package com.kdnadev.proyectofinal_santiagocabrera.common.response;
+package com.kdnadev.proyectofinal_santiagocabrera.dto.usuario;
 
 import java.util.Collections;
 import java.util.List;
 
-import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioResponseDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

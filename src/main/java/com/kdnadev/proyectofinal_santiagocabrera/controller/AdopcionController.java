@@ -3,10 +3,9 @@ package com.kdnadev.proyectofinal_santiagocabrera.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.AdopcionResponse;
-import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.adopcion.AdopcionCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.adopcion.AdopcionMapper;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.adopcion.AdopcionResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Adopcion;
 import com.kdnadev.proyectofinal_santiagocabrera.service.AdopcionService;
 

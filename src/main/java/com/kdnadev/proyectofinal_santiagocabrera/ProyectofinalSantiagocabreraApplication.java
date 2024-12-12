@@ -3,6 +3,7 @@ package com.kdnadev.proyectofinal_santiagocabrera;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.service.MascotaService;
 
 import jakarta.annotation.PostConstruct;
@@ -50,11 +51,11 @@ public class ProyectofinalSantiagocabreraApplication {
 
 	public void initDatosIniciales(){
 		if(mascotaService.getAllTipoMascota().isEmpty()){
-			mascotaService.createTipoMascota("Perro");
-			mascotaService.createTipoMascota("Gato");
-			mascotaService.createTipoMascota("Loro");
-			mascotaService.createTipoMascota("Hamster");
-			mascotaService.createTipoMascota("Huron");
+			mascotaService.createTipoMascota(new TipoMascotaCreateDTO("Perro"));
+			mascotaService.createTipoMascota(new TipoMascotaCreateDTO("Gato"));
+			mascotaService.createTipoMascota(new TipoMascotaCreateDTO("Loro"));
+			mascotaService.createTipoMascota(new TipoMascotaCreateDTO("Hamster"));
+			mascotaService.createTipoMascota(new TipoMascotaCreateDTO("Huron"));
 		}
 	}
 

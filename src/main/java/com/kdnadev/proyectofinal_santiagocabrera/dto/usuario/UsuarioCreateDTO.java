@@ -26,27 +26,18 @@ public class UsuarioCreateDTO {
         return nombre;
     }
     public void setNombre(String nombre) {
-        if (nombre == null || nombre.isEmpty()) {
-            throw new IllegalArgumentException("El nombre no puede ser nulo o vacío");
-        }
         this.nombre = nombre;
     }
     public String getEmail() {
         return email;
     }
     public void setEmail(String email) {
-        if (email == null || email.isEmpty()) {
-            throw new IllegalArgumentException("El email no puede ser nulo o vacío");
-        }
         this.email = email;
     }
     public String getTelefono() {
         return telefono;
     }
     public void setTelefono(String telefono) {
-        if (telefono == null || telefono.isEmpty()) {
-            throw new IllegalArgumentException("El teléfono no puede ser nulo o vacío");
-        }
         this.telefono = telefono;
     }
     public String getUsername() {
@@ -77,5 +68,4 @@ public class UsuarioCreateDTO {
             throw new IllegalArgumentException("El documento no puede estar vacio.");
         this.documento = documento;
     }
-    
 }
