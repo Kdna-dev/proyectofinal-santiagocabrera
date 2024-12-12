@@ -1,6 +1,7 @@
 package com.kdnadev.proyectofinal_santiagocabrera.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kdnadev.proyectofinal_santiagocabrera.repository.AdopcionRepository;
 import com.kdnadev.proyectofinal_santiagocabrera.repository.MascotaRepository;
@@ -28,6 +29,7 @@ public class AdopcionService {
         this.adopcionMapper = adopcionMapper;
     }
 
+    @Transactional(readOnly = false)
     public Adopcion create(AdopcionCreateDTO adopcionNueva) {
         Adopcion adopcion = adopcionMapper.toEntity(adopcionNueva);
 
@@ -49,6 +51,7 @@ public class AdopcionService {
         return adopcionRepository.save(adopcion);
     }
 
+    @Transactional(readOnly = false)
     public void delete(Long id) {
         // Buscar la adopción primero para evitar múltiples consultas
         Adopcion adopcion = adopcionRepository.findById(id)

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kdnadev.proyectofinal_santiagocabrera.common.utils.Utils;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioMapper;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioUpdateDTO;
@@ -67,8 +68,7 @@ public class UsuarioService {
         usuario.setPassword(passwordEncoder.encode(usuarioNuevo.getPassword()));
         usuario.setRoles(Set.of(Rol.fromCodigo(codigoRol)));
 
-        Date fechaActual = new Date(System.currentTimeMillis());
-        usuario.setFechaCreacion(fechaActual);
+        usuario.setFechaCreacion(Utils.getCurrentDate());
 
         return usuarioRepository.save(usuario);
     }
@@ -82,8 +82,7 @@ public class UsuarioService {
 
         usuarioMapper.updateUsuarioFromDTO(actualizacionUsuario, usuario);
 
-        Date fechaActual = new Date(System.currentTimeMillis());
-        usuario.setFechaActualizacion(fechaActual);
+        usuario.setFechaActualizacion(Utils.getCurrentDate());
 
         return usuarioRepository.save(usuario);
     }

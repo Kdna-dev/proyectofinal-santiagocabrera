@@ -43,7 +43,12 @@ public class MascotaService {
     }
 
     public void deleteById(Long id) {
-        mascotaRepository.deleteById(id);
+        Mascota mascota = mascotaRepository.findById(id)
+            .orElseThrow(() ->  {
+                throw new ResourceNotFoundException("No se encontro la mascota con id: " + id);
+            });
+
+        mascotaRepository.delete(mascota);
     }
 
     /**
@@ -54,9 +59,7 @@ public class MascotaService {
     public Mascota create(MascotaCreateDTO mascotaNueva) {
         Mascota mascota = mascotaMapper.toEntity(mascotaNueva);
 
-        Date fechaActual = new Date(System.currentTimeMillis());
-        mascota.setFechaCreacion(fechaActual);
-
+        mascota.setFechaCreacion(Utils.getCurrentDate());
         return mascotaRepository.save(mascota);
     }
 
@@ -71,16 +74,16 @@ public class MascotaService {
                 .map(m -> {
                     mascotaMapper.updateMascotaFromDTO(actualizacionMascota, m);
 
-                    Date fechaActual = new Date(System.currentTimeMillis());
-                    m.setFechaActualizacion(fechaActual);
+                    m.setFechaActualizacion(Utils.getCurrentDate());
                     return mascotaRepository.save(m);
 
                 }).orElseThrow(() -> new ResourceNotFoundException("No se encontro la mascota con id: " + id));
     }
 
     public Mascota setDisponibleParaAdopcion(Long id, boolean disponible) {
-        mascotaRepository.setDisponibleParaAdopcionById(id, disponible);
-        return mascotaRepository.getReferenceById(id);
+        return mascotaRepository.findById(id)
+            .map(m -> mascotaRepository.setDisponibleParaAdopcionById(id, disponible))
+            .orElseThrow(() -> new ResourceNotFoundException("No se encontro la mascota con id: " + id));
     }
 
     public TipoMascota createTipoMascota(TipoMascotaCreateDTO tipoNuevo) {
