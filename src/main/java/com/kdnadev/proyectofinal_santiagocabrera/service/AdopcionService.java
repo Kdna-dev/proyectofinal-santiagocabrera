@@ -6,6 +6,8 @@ import com.kdnadev.proyectofinal_santiagocabrera.repository.AdopcionRepository;
 import com.kdnadev.proyectofinal_santiagocabrera.repository.MascotaRepository;
 import com.kdnadev.proyectofinal_santiagocabrera.repository.UsuarioRepository;
 import com.kdnadev.proyectofinal_santiagocabrera.common.utils.Utils;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.adopcion.AdopcionCreateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.adopcion.AdopcionMapper;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ValidacionNegocioException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Adopcion;
@@ -17,14 +19,18 @@ public class AdopcionService {
     private AdopcionRepository adopcionRepository;
     private MascotaRepository mascotaRepository;
     private UsuarioRepository usuarioRepository;
+    private AdopcionMapper adopcionMapper;
 
-    public AdopcionService(AdopcionRepository adopcionRepository, MascotaRepository mascotaRepository, UsuarioRepository usuarioRepository) {
+    public AdopcionService(AdopcionRepository adopcionRepository, MascotaRepository mascotaRepository, UsuarioRepository usuarioRepository, AdopcionMapper adopcionMapper) {
         this.adopcionRepository = adopcionRepository;
         this.mascotaRepository = mascotaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.adopcionMapper = adopcionMapper;
     }
 
-    public Adopcion create(Adopcion adopcion) {
+    public Adopcion create(AdopcionCreateDTO adopcionNueva) {
+        Adopcion adopcion = adopcionMapper.toEntity(adopcionNueva);
+
         Usuario usuario = usuarioRepository.findById(adopcion.getIdUsuario())
             .orElseThrow(() -> new ValidacionNegocioException("Usuario no encontrado"));
 

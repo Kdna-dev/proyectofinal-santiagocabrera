@@ -5,6 +5,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.AdopcionResponse;
 import com.kdnadev.proyectofinal_santiagocabrera.common.response.GenericResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.adopcion.AdopcionCreateDTO;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.adopcion.AdopcionMapper;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Adopcion;
 import com.kdnadev.proyectofinal_santiagocabrera.service.AdopcionService;
 
@@ -24,14 +26,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdopcionController {
 
     private AdopcionService adopcionService;
+    private AdopcionMapper adopcionMapper;
 
-    public AdopcionController (AdopcionService adopcionService){
+    public AdopcionController (AdopcionService adopcionService, AdopcionMapper adopcionMapper){
         this.adopcionService = adopcionService;
+        this.adopcionMapper = adopcionMapper;
     }
 
     @PostMapping("/")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN', 'CLIENTE')")
-    public ResponseEntity<AdopcionResponse> create(@RequestBody Adopcion adopcion) {
+    public ResponseEntity<AdopcionResponse> create(@RequestBody AdopcionCreateDTO adopcion) {
         Adopcion adopcionCreada = adopcionService.create(adopcion);
 
         URI location = ServletUriComponentsBuilder
@@ -42,12 +46,12 @@ public class AdopcionController {
 
         return ResponseEntity
                 .created(location)
-                .body(new AdopcionResponse(adopcionCreada));
+                .body(new AdopcionResponse(adopcionMapper.toDTO(adopcionCreada)));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
-    public ResponseEntity<GenericResponse<Void>> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id){
         adopcionService.delete(id);
         return ResponseEntity.noContent().build();
     }

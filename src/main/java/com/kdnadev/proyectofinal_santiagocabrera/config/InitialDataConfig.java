@@ -2,7 +2,6 @@ package com.kdnadev.proyectofinal_santiagocabrera.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.kdnadev.proyectofinal_santiagocabrera.dto.usuario.UsuarioCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Rol;
@@ -56,6 +55,5 @@ public class InitialDataConfig {
             cliente.setTelefono("0000");
             usuarioService.create(cliente, Rol.CLIENTE.getCodigo());
         }
-
     }
 }

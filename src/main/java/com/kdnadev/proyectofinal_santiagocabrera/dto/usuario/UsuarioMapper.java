@@ -25,6 +25,8 @@ public interface UsuarioMapper {
     @Mapping(target = "cantidadMascotasAdoptadas", ignore = true)
     @Mapping(target = "username", ignore = true)
     @Mapping(target = "documento", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     void updateUsuarioFromDTO(UsuarioUpdateDTO dto, @MappingTarget Usuario usuario);
 
     @Mapping(target = "id", ignore = true)
@@ -33,5 +35,6 @@ public interface UsuarioMapper {
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "cantidadMascotasAdoptadas", constant = "0")
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     Usuario toEntity(UsuarioCreateDTO dto);
 }
