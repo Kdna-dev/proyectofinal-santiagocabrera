@@ -8,6 +8,7 @@ import com.kdnadev.proyectofinal_santiagocabrera.dto.mascota.MascotaUpdateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaCreateDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaMapper;
 import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaResponse;
+import com.kdnadev.proyectofinal_santiagocabrera.dto.tipo_mascota.TipoMascotaResponseDTO;
 import com.kdnadev.proyectofinal_santiagocabrera.exception.ResourceNotFoundException;
 import com.kdnadev.proyectofinal_santiagocabrera.model.Mascota;
 import com.kdnadev.proyectofinal_santiagocabrera.model.TipoMascota;
@@ -76,6 +77,10 @@ public class MascotaController {
     //TODO Implementar getAllDisponibleAdopcion con acceso de cliente
     //TODO Implementar getByIdDisponibleAdopcion con acceso de cliente
 
+    @Operation(summary = "Crear mascota", description = "Crea una mascota en la base de datos", responses = {
+        @ApiResponse(responseCode = "201", description = "Mascota creada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MascotaResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Tipo mascota no encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class)))
+    })
     @PostMapping
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> create(@RequestBody MascotaCreateDTO mascota) {
@@ -92,6 +97,11 @@ public class MascotaController {
                 .body(new MascotaResponse(mascotaMapper.toDTO(mascotaCreada)));
     }
 
+    @Operation(summary = "Actualizar mascota", description = "Actualiza la informacion de la mascota proporcionada por id", responses = {
+        @ApiResponse(responseCode = "200", description = "Mascota actualizada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MascotaResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Mascota no encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Tipo mascota no encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class)))
+    })
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> update(@PathVariable Long id, @RequestBody MascotaUpdateDTO mascota) {
@@ -99,6 +109,10 @@ public class MascotaController {
         return ResponseEntity.ok(new MascotaResponse(mascotaMapper.toDTO(mascotaActualizada)));
     }
 
+    @Operation(summary = "Eliminar mascota", description = "Elimina la informacion de la mascota proporcionada por id", responses = {
+        @ApiResponse(responseCode = "204", description = "Mascota eliminada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MascotaResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Mascota no encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class)))
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
@@ -106,6 +120,10 @@ public class MascotaController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Actualizar estado mascota", description = "Actualiza la disponibilidad de la mascota proporcionada por id", responses = {
+        @ApiResponse(responseCode = "200", description = "Mascota actualizada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = MascotaResponse.class))),
+        @ApiResponse(responseCode = "404", description = "Mascota no encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class)))
+    })
     @PutMapping("setDisponible/{id}")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<MascotaResponse> setDisponibleParaAdopcion(@PathVariable Long id,
@@ -114,6 +132,15 @@ public class MascotaController {
         return ResponseEntity.ok(new MascotaResponse(mascotaMapper.toDTO(mascotaActualizada)));
     }
 
+    /**
+     * Metodo para crear los tipos de mascota
+     * @param tipo
+     * @return Devuelve status created sin URI, ya que no disponemos de un metodo de consulta por id
+     */
+    @Operation(summary = "Crear tipo mascota", description = "Crea un tipo mascota en la base de datos", responses = {
+        @ApiResponse(responseCode = "201", description = "Tipo mascota creado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TipoMascotaResponse.class))),
+        @ApiResponse(responseCode = "409", description = "Tipo mascota ya existente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GenericResponse.class)))
+    })
     @PostMapping("/tipoMascota")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TipoMascotaResponse> createTipoMascota(@RequestBody TipoMascotaCreateDTO tipo) {
@@ -124,6 +151,10 @@ public class MascotaController {
                 .body(new TipoMascotaResponse(tipoMascotaMapper.toDTO(tipoCreado)));
     }
 
+
+    @Operation(summary = "Obtiener tipos mascota", description = "Obtiene la lista de todos los tipo mascota", responses = {
+        @ApiResponse(responseCode = "200", description = "Tipos mascota encontrados", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TipoMascotaResponse.class))),
+    })
     @GetMapping("/tipoMascota")
     @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<TipoMascotaResponse> getAllTipoMascota() {

@@ -2,6 +2,7 @@ package com.kdnadev.proyectofinal_santiagocabrera.dto.usuario;
 
 import java.util.List;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -27,6 +28,7 @@ public interface UsuarioMapper {
     @Mapping(target = "documento", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "authorities", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUsuarioFromDTO(UsuarioUpdateDTO dto, @MappingTarget Usuario usuario);
 
     @Mapping(target = "id", ignore = true)

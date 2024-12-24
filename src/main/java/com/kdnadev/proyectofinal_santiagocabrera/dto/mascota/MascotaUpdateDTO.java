@@ -5,8 +5,8 @@ import com.kdnadev.proyectofinal_santiagocabrera.model.TipoMascota;
 public class MascotaUpdateDTO {
     private String nombre;
     private TipoMascota tipoMascota;
-    private int edad;
-    private boolean disponibleParaAdopcion;
+    private Integer edad;
+    private Boolean disponibleParaAdopcion;
 
     public MascotaUpdateDTO() {
     }
@@ -33,19 +33,19 @@ public class MascotaUpdateDTO {
         this.tipoMascota = tipoMascota;
     }
 
-    public int getEdad() {
+    public Integer getEdad() {
         return edad;
     }
 
-    public void setEdad(int edad) {
+    public void setEdad(Integer edad) {
         this.edad = edad;
     }
 
-    public boolean isDisponibleParaAdopcion() {
+    public Boolean isDisponibleParaAdopcion() {
         return disponibleParaAdopcion;
     }
 
-    public void setDisponibleParaAdopcion(boolean disponibleParaAdopcion) {
+    public void setDisponibleParaAdopcion(Boolean disponibleParaAdopcion) {
         this.disponibleParaAdopcion = disponibleParaAdopcion;
     }
 

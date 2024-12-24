@@ -2,6 +2,7 @@ package com.kdnadev.proyectofinal_santiagocabrera.dto.mascota;
 
 import java.util.List;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -21,6 +22,7 @@ public interface MascotaMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "fechaCreacion", ignore = true)
     @Mapping(target = "fechaActualizacion", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateMascotaFromDTO(MascotaUpdateDTO dto, @MappingTarget Mascota mascota);
 
     @Mapping(target = "id", ignore = true)

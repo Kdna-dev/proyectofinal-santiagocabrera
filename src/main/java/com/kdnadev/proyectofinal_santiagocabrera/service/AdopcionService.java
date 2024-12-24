@@ -46,7 +46,10 @@ public class AdopcionService {
         // En el modelo se maneja el error de maximo numero de mascotas
         usuario.incrementaNumeroDeAdopciones();
         usuarioRepository.save(usuario);
-        mascotaRepository.setDisponibleParaAdopcionById(adopcion.getIdMascota(), false);
+
+        mascota.setDisponibleParaAdopcion(false);
+        mascotaRepository.save(mascota);
+
         adopcion.setFechaAdopcion(Utils.getCurrentDate());
         return adopcionRepository.save(adopcion);
     }
@@ -60,8 +63,13 @@ public class AdopcionService {
         Usuario usuario = usuarioRepository.findById(adopcion.getIdUsuario())
             .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
+        Mascota mascota = mascotaRepository.findById(adopcion.getIdMascota())
+            .orElseThrow(() -> new ResourceNotFoundException("Mascota no encontrada"));
+
         adopcionRepository.delete(adopcion);
-        mascotaRepository.setDisponibleParaAdopcionById(adopcion.getIdMascota(), true);
+
+        mascota.setDisponibleParaAdopcion(true);
+        mascotaRepository.save(mascota);
         usuario.decrementaNumeroDeAdopciones();
         usuarioRepository.save(usuario);
     }

@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,7 +20,6 @@ public class Mascota {
     private String nombre;
 
     @ManyToOne
-    @MapsId
     @JoinColumn(name = "tipo_mascota_id")
     private TipoMascota tipoMascota;
 
